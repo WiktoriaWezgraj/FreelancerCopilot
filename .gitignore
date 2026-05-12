@@ -1,0 +1,17 @@
+# Zależności
+node_modules/
+
+# Sekrety (bardzo ważne!)
+.env
+*.env.local
+
+# Buildy
+dist/
+build/
+
+# Logi
+npm-debug.log*
+yarn-error.log*
+
+# Systemowe
+.DS_Store
