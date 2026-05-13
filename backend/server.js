@@ -4,17 +4,25 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
+
+if (!process.env.GEMINI_API_KEY) {
+  console.error("ERROR: API key not found in .env file!");
+} else {
+  console.log("API key loaded successfully (first 7 characters):", process.env.GEMINI_API_KEY.substring(0, 7));
+}
+
+
 const app = express();
 app.use(cors());
 app.use(express.json());
 
 // Ten endpoint pozwoli nam sprawdzić serwer w przeglądarce
 app.get("/", (req, res) => {
-  res.send("Backend dziala na porcie 3002!");
+  res.send("Backend operates on port 3002!");
 });
 
 app.post("/analyze", async (req, res) => {
-  console.log("--> Zapytanie odebrane!");
+  console.log("--> Query received!");
   try {
     const { briefText } = req.body;
     const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${process.env.GEMINI_API_KEY}`;
@@ -23,7 +31,7 @@ app.post("/analyze", async (req, res) => {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        contents: [{ parts: [{ text: `Analiza briefu: ${briefText}. Zwroc JSON: {"price":"","timeline":"","stack":[],"summary":""}` }] }],
+        contents: [{ parts: [{ text: `Brief's analysis: ${briefText}. Return JSON: {"price":"","timeline":"","stack":[],"summary":""}` }] }],
         generationConfig: { responseMimeType: "application/json" }
       })
     });
@@ -34,11 +42,11 @@ app.post("/analyze", async (req, res) => {
     const result = JSON.parse(data.candidates[0].content.parts[0].text);
     res.json(result);
   } catch (err) {
-    console.error("Blad:", err.message);
+    console.error("Error:", err.message);
     res.status(500).json({ error: err.message });
   }
 });
 
 app.listen(3002, () => {
-  console.log("SERWER START: http://localhost:3001");
+  console.log("SERVER START: http://localhost:3002");
 });

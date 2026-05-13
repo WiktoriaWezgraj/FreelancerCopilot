@@ -1,10 +1,10 @@
 export default function ResultCard({ result }) {
   return (
     <div>
-      <h2>Wynik analizy</h2>
+      <h2>Analysis result</h2>
 
       <p>
-        <strong>Cena:</strong> {result.price}
+        <strong>Price:</strong> {result.price}
       </p>
 
       <p>
