@@ -17,7 +17,7 @@ An intelligent web application that analyzes project briefs and generates profes
 
 * **Frontend:** React.js, Vite, CSS3
 * **Backend:** Node.js, Express.js
-* **AI Engine:** Google Gemini 1.5 Flash API
+* **AI Engine:** Google Gemini 2.5 Flash API
 
 ---
 
@@ -68,7 +68,7 @@ An intelligent web application that analyzes project briefs and generates profes
 
 1.  Enter your project brief or client requirements into the text area.
 2.  Select the desired seniority level and currency. ! -> in progress
-3.  Click **"Analyze"**.
+3.  Click **"Analyze brief"**.
 4.  Review the AI-generated estimate and professional summary.
 
 ---

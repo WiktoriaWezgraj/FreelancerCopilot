@@ -8,12 +8,12 @@ export async function analyzeBrief(data) {
 
     if (!response.ok) {
       const errorData = await response.json();
-      throw new Error(errorData.error || "Błąd serwera 500");
+      throw new Error(errorData.error || "Server error 500");
     }
 
     return await response.json();
   } catch (err) {
-    console.error("Błąd w api.js:", err.message);
+    console.error("Error in api.js:", err.message);
     throw err; // Przekazujemy błąd dalej do App.jsx
   }
 }

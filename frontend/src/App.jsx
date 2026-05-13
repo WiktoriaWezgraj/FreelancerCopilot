@@ -4,6 +4,7 @@ import BriefForm from "./components/BriefForm";
 import ResultCard from "./components/ResultCard";
 import { createMockResult } from "./utils/mockResult";
 import "./styles/App.css";
+import { projectExamples } from "./data/examples";
 
 export default function App() {
   const [briefText, setBriefText] = useState("");
@@ -67,6 +68,45 @@ export default function App() {
             estimate.
           </p>
         </header>
+
+        <div style={{ marginBottom: "20px" }}>
+          <p style={{ fontSize: "14px", marginBottom: "10px", color: "#555" }}>
+            Or use an example:
+          </p>
+          <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
+            {projectExamples.map((ex) => (
+              <button
+                key={ex.id}
+                onClick={() => setBriefText(ex.description)}
+                style={{
+                  padding: "10px",
+                  cursor: "pointer",
+                  fontSize: "12px",
+                  borderRadius: "8px",
+                  border: "1px solid #ddd",
+                  backgroundColor: "#fff",
+                  textAlign: "left",
+                  flex: "1",
+                  minWidth: "150px",
+                  transition: "background 0.2s"
+                }}
+                onMouseOver={(e) => (e.currentTarget.style.backgroundColor = "#f9f9f9")}
+                onMouseOut={(e) => (e.currentTarget.style.backgroundColor = "#fff")}
+              >
+                <strong style={{ display: "block", marginBottom: "4px" }}>{ex.title}</strong>
+                <span style={{ 
+                  display: "-webkit-box", 
+                  WebkitLineClamp: "2", 
+                  WebkitBoxOrient: "vertical", 
+                  overflow: "hidden", 
+                  color: "#777" 
+                }}>
+                  {ex.description}
+                </span>
+              </button>
+            ))}
+          </div>
+        </div>
 
         <BriefForm
           briefText={briefText}
