@@ -1,10 +1,12 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { analyzeBrief } from "./api";
 import BriefForm from "./components/BriefForm";
 import ResultCard from "./components/ResultCard";
+import ThemeToggle from "./components/ThemeToggle";
 import { createMockResult } from "./utils/mockResult";
-import "./styles/App.css";
+import { applyTheme, getStoredTheme, saveTheme } from "./utils/themeStorage";
 import { projectExamples } from "./data/examples";
+import "./styles/App.css";
 
 export default function App() {
   const [briefText, setBriefText] = useState("");
@@ -12,6 +14,12 @@ export default function App() {
   const [currency, setCurrency] = useState("PLN");
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [theme, setTheme] = useState(() => getStoredTheme() || "light");
+
+  useEffect(() => {
+    applyTheme(theme);
+    saveTheme(theme);
+  }, [theme]);
 
   async function handleAnalyze() {
     if (!briefText.trim()) {
@@ -52,15 +60,28 @@ export default function App() {
     setResult(null);
   }
 
+  function handleUseExample(description) {
+    setBriefText(description);
+    setResult(null);
+  }
+
+  function handleToggleTheme() {
+    setTheme((currentTheme) => (currentTheme === "light" ? "dark" : "light"));
+  }
+
   return (
     <main className="app">
       <div className="app-shell">
-        <header className="app-header">
+        <div className="top-bar">
           <div className="app-badge">
             <span className="app-badge-dot" />
             AI-powered brief analysis
           </div>
 
+          <ThemeToggle theme={theme} onToggle={handleToggleTheme} />
+        </div>
+
+        <header className="app-header">
           <h1>Freelancer Copilot</h1>
           <p>
             Paste a client brief, choose your experience level and select the
@@ -69,44 +90,23 @@ export default function App() {
           </p>
         </header>
 
-        <div style={{ marginBottom: "20px" }}>
-          <p style={{ fontSize: "14px", marginBottom: "10px", color: "#555" }}>
-            Or use an example:
-          </p>
-          <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
-            {projectExamples.map((ex) => (
+        <section className="examples-section">
+          <p className="examples-label">Or use an example:</p>
+
+          <div className="examples-grid">
+            {projectExamples.map((example) => (
               <button
-                key={ex.id}
-                onClick={() => setBriefText(ex.description)}
-                style={{
-                  padding: "10px",
-                  cursor: "pointer",
-                  fontSize: "12px",
-                  borderRadius: "8px",
-                  border: "1px solid #ddd",
-                  backgroundColor: "#fff",
-                  textAlign: "left",
-                  flex: "1",
-                  minWidth: "150px",
-                  transition: "background 0.2s"
-                }}
-                onMouseOver={(e) => (e.currentTarget.style.backgroundColor = "#f9f9f9")}
-                onMouseOut={(e) => (e.currentTarget.style.backgroundColor = "#fff")}
+                key={example.id}
+                type="button"
+                className="example-card"
+                onClick={() => handleUseExample(example.description)}
               >
-                <strong style={{ display: "block", marginBottom: "4px" }}>{ex.title}</strong>
-                <span style={{ 
-                  display: "-webkit-box", 
-                  WebkitLineClamp: "2", 
-                  WebkitBoxOrient: "vertical", 
-                  overflow: "hidden", 
-                  color: "#777" 
-                }}>
-                  {ex.description}
-                </span>
+                <strong>{example.title}</strong>
+                <span>{example.description}</span>
               </button>
             ))}
           </div>
-        </div>
+        </section>
 
         <BriefForm
           briefText={briefText}
