@@ -98,7 +98,7 @@
   padding: 18px 20px;
   border-radius: 16px;
   border: 1px solid var(--color-border);
-  background: #ffffff;
+  background: var(--color-surface-strong);
 }
 
 .decision-content {
@@ -134,7 +134,7 @@
 }
 
 .decision-yes {
-  background: #ffffff;
+  background: var(--color-surface-strong);
 }
 
 .decision-yes .decision-icon {
@@ -143,7 +143,7 @@
 }
 
 .decision-no {
-  background: #ffffff;
+  background: var(--color-surface-strong);
 }
 
 .decision-no .decision-icon {
@@ -152,7 +152,7 @@
 }
 
 .decision-maybe {
-  background: #ffffff;
+  background: var(--color-surface-strong);
 }
 
 .decision-maybe .decision-icon {
@@ -165,8 +165,12 @@
 .risk-row {
   border-color: rgba(245, 158, 11, 0.38);
   background:
-    linear-gradient(135deg, rgba(245, 158, 11, 0.08), #ffffff 48%),
-    #ffffff;
+    linear-gradient(
+      135deg,
+      rgba(245, 158, 11, 0.09),
+      var(--color-surface-strong) 52%
+    ),
+    var(--color-surface-strong);
 }
 
 .risk-header {
@@ -196,7 +200,7 @@
   padding: 18px;
   border: 1px solid var(--color-border);
   border-radius: 16px;
-  background-color: #ffffff;
+  background-color: var(--color-surface-strong);
 }
 
 .section-heading {
@@ -233,8 +237,12 @@
   border: 1px solid rgba(245, 158, 11, 0.28);
   border-radius: 14px;
   background:
-    linear-gradient(135deg, rgba(245, 158, 11, 0.07), #ffffff 52%),
-    #ffffff;
+    linear-gradient(
+      135deg,
+      rgba(245, 158, 11, 0.08),
+      var(--color-surface-strong) 58%
+    ),
+    var(--color-surface-strong);
 }
 
 .risk-category {
@@ -291,6 +299,73 @@
   color: var(--color-accent);
   font-size: 12px;
   font-weight: 900;
+}
+
+:root[data-theme="dark"] .result-card::before {
+  background: rgba(2, 86, 198, 0.16);
+}
+
+:root[data-theme="dark"] .decision-box,
+:root[data-theme="dark"] .result-row,
+:root[data-theme="dark"] .result-section {
+  background-color: rgba(17, 24, 39, 0.92);
+}
+
+:root[data-theme="dark"] .decision-yes,
+:root[data-theme="dark"] .decision-no,
+:root[data-theme="dark"] .decision-maybe {
+  background: rgba(17, 24, 39, 0.92);
+}
+
+:root[data-theme="dark"] .risk-row {
+  border-color: rgba(245, 158, 11, 0.34);
+  background:
+    linear-gradient(
+      135deg,
+      rgba(245, 158, 11, 0.12),
+      rgba(17, 24, 39, 0.94) 54%
+    ),
+    rgba(17, 24, 39, 0.94);
+}
+
+:root[data-theme="dark"] .risk-card {
+  border-color: rgba(245, 158, 11, 0.28);
+  background:
+    linear-gradient(
+      135deg,
+      rgba(245, 158, 11, 0.1),
+      rgba(31, 41, 55, 0.92) 58%
+    ),
+    rgba(31, 41, 55, 0.92);
+}
+
+:root[data-theme="dark"] .risk-category {
+  background-color: rgba(245, 158, 11, 0.16);
+  color: #fbbf24;
+}
+
+:root[data-theme="dark"] .risk-icon {
+  background-color: rgba(245, 158, 11, 0.16);
+  color: #fbbf24;
+}
+
+:root[data-theme="dark"] .missing-list li {
+  background-color: rgba(31, 41, 55, 0.92);
+}
+
+:root[data-theme="dark"] .stack-list li {
+  background-color: rgba(2, 86, 198, 0.16);
+  border-color: rgba(96, 165, 250, 0.24);
+}
+
+:root[data-theme="dark"] .decision-yes .decision-icon {
+  background-color: rgba(16, 185, 129, 0.16);
+  color: #34d399;
+}
+
+:root[data-theme="dark"] .decision-no .decision-icon {
+  background-color: rgba(239, 68, 68, 0.16);
+  color: #f87171;
 }
 
 /* Responsive */
