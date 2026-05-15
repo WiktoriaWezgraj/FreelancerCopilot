@@ -73,7 +73,7 @@ export default function BriefForm({
         </button>
 
         <button className="button button-light" type="button" onClick={onClear}>
-          Clear
+          Clear result
         </button>
       </div>
     </section>

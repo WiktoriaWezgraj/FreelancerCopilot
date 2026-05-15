@@ -3,6 +3,7 @@ import { analyzeBrief } from "./api";
 import BriefForm from "./components/BriefForm";
 import ResultCard from "./components/ResultCard";
 import ThemeToggle from "./components/ThemeToggle";
+import LoadingModal from "./components/LoadingModal";
 import { createMockResult } from "./utils/mockResult";
 import { applyTheme, getStoredTheme, saveTheme } from "./utils/themeStorage";
 import { projectExamples } from "./data/examples";
@@ -54,9 +55,6 @@ export default function App() {
   }
 
   function handleClear() {
-    setBriefText("");
-    setExperienceLevel("mid");
-    setCurrency("PLN");
     setResult(null);
   }
 
@@ -69,69 +67,71 @@ export default function App() {
     setTheme((currentTheme) => (currentTheme === "light" ? "dark" : "light"));
   }
 
-  return (
-    <main className="app">
-      <div className="app-shell">
-        <div className="top-bar">
-          <div className="app-badge">
-            <span className="app-badge-dot" />
-            AI-powered brief analysis
-          </div>
+ return (
+  <main className="app">
+    <LoadingModal isOpen={loading} />
 
-          <ThemeToggle theme={theme} onToggle={handleToggleTheme} />
+    <div className="app-shell">
+      <div className="top-bar">
+        <div className="app-badge">
+          <span className="app-badge-dot" />
+          AI-powered brief analysis
         </div>
 
-        <header className="app-header">
-          <h1>Freelancer Copilot</h1>
-          <p>
-            Paste a client brief, choose your experience level and select the
-            estimation currency. The app will help you prepare an early project
-            estimate.
-          </p>
-        </header>
-
-        <section className="examples-section">
-          <p className="examples-label">Or use an example:</p>
-
-          <div className="examples-grid">
-            {projectExamples.map((example) => (
-              <button
-                key={example.id}
-                type="button"
-                className="example-card"
-                onClick={() => handleUseExample(example.description)}
-              >
-                <strong>{example.title}</strong>
-                <span>{example.description}</span>
-              </button>
-            ))}
-          </div>
-        </section>
-
-        <BriefForm
-          briefText={briefText}
-          setBriefText={setBriefText}
-          experienceLevel={experienceLevel}
-          setExperienceLevel={setExperienceLevel}
-          currency={currency}
-          setCurrency={setCurrency}
-          loading={loading}
-          onAnalyze={handleAnalyze}
-          onMockResult={handleMockResult}
-          onClear={handleClear}
-        />
-
-        <hr className="divider" />
-
-        {result ? (
-          <ResultCard result={result} />
-        ) : (
-          <div className="empty-state">
-            Run a mock analysis to preview the result card, or connect the API
-            key and analyze a real client brief.
-          </div>
-        )}
+        <ThemeToggle theme={theme} onToggle={handleToggleTheme} />
       </div>
-    </main>
-  );
+
+      <header className="app-header">
+        <h1>Freelancer Copilot</h1>
+        <p>
+          Paste a client brief, choose your experience level and select the
+          estimation currency. The app will help you prepare an early project
+          estimate.
+        </p>
+      </header>
+
+      <section className="examples-section">
+        <p className="examples-label">Or use an example:</p>
+
+        <div className="examples-grid">
+          {projectExamples.map((example) => (
+            <button
+              key={example.id}
+              type="button"
+              className="example-card"
+              onClick={() => handleUseExample(example.description)}
+            >
+              <strong>{example.title}</strong>
+              <span>{example.description}</span>
+            </button>
+          ))}
+        </div>
+      </section>
+
+      <BriefForm
+        briefText={briefText}
+        setBriefText={setBriefText}
+        experienceLevel={experienceLevel}
+        setExperienceLevel={setExperienceLevel}
+        currency={currency}
+        setCurrency={setCurrency}
+        loading={loading}
+        onAnalyze={handleAnalyze}
+        onMockResult={handleMockResult}
+        onClear={handleClear}
+      />
+
+      <hr className="divider" />
+
+      {result ? (
+        <ResultCard result={result} />
+      ) : (
+        <div className="empty-state">
+          Run a mock analysis to preview the result card, or connect the API
+          key and analyze a real client brief.
+        </div>
+      )}
+    </div>
+  </main>
+);
 }
