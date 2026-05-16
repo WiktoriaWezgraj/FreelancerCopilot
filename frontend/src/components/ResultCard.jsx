@@ -15,15 +15,31 @@ export default function ResultCard({ result }) {
 
   const decision = result.decision || "maybe";
 
-  const decisionText =
-    decision === "yes"
-      ? "Yes, this project looks worth taking."
-      : decision === "no"
-      ? "No, this project looks too risky."
-      : "This project needs clarification first.";
+  const decisionMeta = {
+    yes: {
+      icon: "✓",
+      status: "YES",
+      badge: "Recommended",
+      title: "Worth considering",
+      text: "This project looks realistic and worth taking.",
+    },
+    maybe: {
+      icon: "?",
+      status: "MAYBE",
+      badge: "Needs review",
+      title: "Needs clarification",
+      text: "This project needs clarification before accepting.",
+    },
+    no: {
+      icon: "✕",
+      status: "NO",
+      badge: "High risk",
+      title: "Too risky",
+      text: "This project looks too risky or unsuitable right now.",
+    },
+  };
 
-  const decisionIcon =
-    decision === "yes" ? "✓" : decision === "no" ? "✕" : "?";
+  const currentDecision = decisionMeta[decision] || decisionMeta.maybe;
 
   return (
     <section className="result-card">
@@ -32,18 +48,28 @@ export default function ResultCard({ result }) {
       <div className="result-content">
         {hasDecision && (
           <div className={`decision-box decision-${decision}`}>
-            <span className="decision-icon">{decisionIcon}</span>
+            <span className="decision-icon">{currentDecision.icon}</span>
 
             <div className="decision-content">
+              <div className="decision-topline">
+                <span className="decision-status">
+                  {currentDecision.status}
+                </span>
+
+                <span className="decision-badge">
+                  {currentDecision.badge}
+                </span>
+              </div>
+
               <span className="result-label">
                 Is it worth taking this project?
               </span>
 
               <p className="decision-title">
-                {result.decisionLabel || "Needs clarification"}
+                {result.decisionLabel || currentDecision.title}
               </p>
 
-              <p className="decision-text">{decisionText}</p>
+              <p className="decision-text">{currentDecision.text}</p>
             </div>
           </div>
         )}
