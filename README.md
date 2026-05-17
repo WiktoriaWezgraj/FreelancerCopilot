@@ -206,6 +206,7 @@ FreelancerCopilot/
 │   └── package.json
 │
 └── README.md
+```
 
 ## Installation & Setup
 
