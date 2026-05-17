@@ -1,11 +1,12 @@
 import React, { useEffect, useRef, useState } from "react";
-import { analyzeBrief } from "./api";
+import { analyzeBrief, generateProposalDraft } from "./api";
 import BriefForm from "./components/BriefForm";
 import ResultCard from "./components/ResultCard";
 import ThemeToggle from "./components/ThemeToggle";
 import LoadingModal from "./components/LoadingModal";
 import ErrorModal from "./components/ErrorModal";
 import AnalysisHistory from "./components/AnalysisHistory";
+import ProposalDraftCard from "./components/ProposalDraftCard";
 import { createMockResult } from "./utils/mockResult";
 import { applyTheme, getStoredTheme, saveTheme } from "./utils/themeStorage";
 import {
@@ -23,6 +24,8 @@ export default function App() {
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [proposal, setProposal] = useState(null);
+  const [proposalLoading, setProposalLoading] = useState(false);
   const [theme, setTheme] = useState(() => getStoredTheme() || "light");
   const [analysisHistory, setAnalysisHistory] = useState(() =>
     getAnalysisHistory()
@@ -68,6 +71,7 @@ export default function App() {
     try {
       setErrorMessage("");
       setLoading(true);
+      setProposal(null);
 
       const data = await analyzeBrief({
         briefText,
@@ -93,12 +97,40 @@ export default function App() {
     });
 
     setErrorMessage("");
+    setProposal(null);
     setResult(mockData);
     scrollToResult();
   }
 
+  async function handleGenerateProposal() {
+  if (!result) {
+    setErrorMessage("Run an analysis before generating a proposal draft.");
+    return;
+  }
+
+  try {
+    setErrorMessage("");
+    setProposalLoading(true);
+
+    const data = await generateProposalDraft({
+      briefText,
+      experienceLevel,
+      currency,
+      analysis: result,
+    });
+
+    setProposal(data);
+  } catch (err) {
+    console.error(err);
+    setErrorMessage(err.message || "Failed to generate proposal draft.");
+  } finally {
+    setProposalLoading(false);
+  }
+}
+
   function handleClear() {
     setResult(null);
+    setProposal(null);
     setErrorMessage("");
   }
 
@@ -107,6 +139,7 @@ export default function App() {
     setExperienceLevel(item.experienceLevel);
     setCurrency(item.currency);
     setResult(item.result);
+    setProposal(null);
     setErrorMessage("");
     setIsHistoryOpen(false);
     scrollToResult();
@@ -120,6 +153,7 @@ export default function App() {
   function handleUseExample(description) {
     setBriefText(description);
     setResult(null);
+    setProposal(null);
     setErrorMessage("");
   }
 
@@ -210,7 +244,15 @@ export default function App() {
 
             <div ref={resultSectionRef}>
               {result ? (
-                <ResultCard result={result} />
+                <>
+                  <ResultCard result={result} />
+
+                  <ProposalDraftCard
+                    proposal={proposal}
+                    loading={proposalLoading}
+                    onGenerate={handleGenerateProposal}
+                  />
+                </>
               ) : (
                 <div className="empty-state">
                   Run a mock analysis to preview the result card, or connect the
@@ -218,6 +260,7 @@ export default function App() {
                 </div>
               )}
             </div>
+
           </div>
         </section>
       </div>

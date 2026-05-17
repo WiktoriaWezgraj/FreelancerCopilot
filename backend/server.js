@@ -149,6 +149,80 @@ Limit missingDetails to 3-6 most important questions.
   }
 });
 
+app.post("/proposal", async (req, res) => {
+  console.log("--> Proposal draft request received!");
+
+  try {
+    const {
+      briefText,
+      experienceLevel = "mid",
+      currency = "PLN",
+      analysis,
+    } = req.body;
+
+    if (!briefText || !briefText.trim()) {
+      return res.status(400).json({
+        error: "Brief text is required to generate a proposal draft.",
+      });
+    }
+
+    if (!analysis) {
+      return res.status(400).json({
+        error: "Analysis result is required to generate a proposal draft.",
+      });
+    }
+
+    if (!process.env.GEMINI_API_KEY) {
+      return res.status(500).json({
+        error: "Missing GEMINI_API_KEY in backend .env file.",
+      });
+    }
+
+    const firstDraft = await generateProposalText({
+      briefText,
+      experienceLevel,
+      currency,
+      analysis,
+      attempt: 1,
+    });
+
+    let finalDraft = firstDraft;
+
+    if (isProposalTooShort(firstDraft)) {
+      console.log("Proposal draft was too short. Retrying...");
+
+      finalDraft = await generateProposalText({
+        briefText,
+        experienceLevel,
+        currency,
+        analysis,
+        attempt: 2,
+      });
+    }
+
+    if (isProposalTooShort(finalDraft)) {
+      return res.status(500).json({
+        error:
+          "Gemini returned a proposal draft that was too short. Please try again.",
+      });
+    }
+
+    console.log("Proposal draft generated successfully.");
+    console.log("Final proposal draft length:", finalDraft.length);
+
+    res.json({
+      subjectLine: createProposalSubjectLine(briefText, analysis),
+      proposalDraft: finalDraft.trim(),
+    });
+  } catch (err) {
+    console.error("Proposal error:", err.message);
+
+    res.status(500).json({
+      error: err.message,
+    });
+  }
+});
+
 function normalizeDecision(decision) {
   const allowedDecisions = ["yes", "no", "maybe"];
 
@@ -178,6 +252,153 @@ function normalizeMissingDetails(missingDetails) {
   }
 
   return missingDetails.filter((item) => typeof item === "string" && item.trim());
+}
+
+async function generateProposalText({
+  briefText,
+  experienceLevel,
+  currency,
+  analysis,
+  attempt,
+}) {
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${process.env.GEMINI_API_KEY}`;
+
+  const prompt = `
+You are writing a professional client-facing proposal message for a freelance developer.
+
+Write a complete proposal draft in English.
+
+Important:
+- Return only the proposal message text.
+- Do not return JSON.
+- Do not include a subject line.
+- Do not use markdown headings.
+- Do not use code fences.
+- Do not stop mid-sentence.
+- Finish with a complete professional closing.
+- Do not add a fake freelancer name.
+- Do not write placeholders such as [Client Name].
+
+Style:
+- Natural, professional, clear and helpful.
+- Not too salesy, avoid generic sales phrases such as 'bringing your vision to life'.
+- Avoid repeating the same project description twice.
+- Keep the message practical and specific.
+- Honest about uncertainty- mention the main project risk briefly but professionally.
+- Do not overpromise.
+- Do not invent confirmed requirements.
+
+Freelancer experience level: ${experienceLevel}
+Currency: ${currency}
+
+Client brief:
+"""
+${briefText}
+"""
+
+Previous project analysis:
+"""
+${JSON.stringify(analysis, null, 2)}
+"""
+
+Write the proposal as 5 short paragraphs:
+
+Paragraph 1:
+Thank the client and briefly refer to the project.
+
+Paragraph 2:
+Show that you understand the project scope.
+
+Paragraph 3:
+Mention the preliminary timeline and budget estimate from the analysis.
+Make it clear this is not a final quote.
+
+Paragraph 4:
+Suggest next steps and explain what should be clarified before final pricing.
+
+Paragraph 5:
+End with a short professional closing.
+
+Also include 2-4 polite clarification questions inside the message.
+
+Length:
+- ${attempt === 1 ? "170-230 words" : "140-190 words"}.
+- Complete message.
+- No unfinished sentences.
+`;
+
+  const response = await fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      contents: [{ parts: [{ text: prompt }] }],
+      generationConfig: {
+        maxOutputTokens: 2000,
+        temperature: 0.4,
+      },
+    }),
+  });
+
+  const data = await response.json();
+
+  if (data.error) {
+    throw new Error(data.error.message);
+  }
+
+  const candidate = data.candidates?.[0];
+  const proposalDraft = candidate?.content?.parts?.[0]?.text || "";
+
+  console.log(`Proposal attempt ${attempt} finish reason:`, candidate?.finishReason);
+  console.log(`Proposal attempt ${attempt} length:`, proposalDraft.length);
+  console.log(`Proposal attempt ${attempt} preview:`, proposalDraft.slice(0, 250));
+
+  return proposalDraft.trim();
+}
+
+function isProposalTooShort(proposalDraft) {
+  if (!proposalDraft || proposalDraft.length < 650) {
+    return true;
+  }
+
+  const trimmed = proposalDraft.trim();
+
+  const endsProperly =
+    trimmed.endsWith(".") ||
+    trimmed.endsWith("!") ||
+    trimmed.endsWith("?");
+
+  return !endsProperly;
+}
+
+function createProposalSubjectLine(briefText, analysis) {
+  const summary = analysis?.summary || "";
+  const text = `${summary} ${briefText}`.toLowerCase();
+
+  if (text.includes("wordpress") && text.includes("book")) {
+    return "Proposal: WordPress E-book & Video Store Development";
+  }
+
+  if (text.includes("e-commerce") || text.includes("online store")) {
+    return "Proposal: E-commerce Website Development";
+  }
+
+  if (text.includes("crm")) {
+    return "Proposal: CRM Platform Development";
+  }
+
+  if (text.includes("saas")) {
+    return "Proposal: SaaS Platform Development";
+  }
+
+  if (text.includes("landing page") || text.includes("one-page")) {
+    return "Proposal: Landing Page Development";
+  }
+
+  if (text.includes("portfolio")) {
+    return "Proposal: Portfolio Website Development";
+  }
+
+  return "Proposal: Project Development Estimate";
 }
 
 app.listen(PORT, () => {

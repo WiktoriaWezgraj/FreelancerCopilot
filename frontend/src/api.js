@@ -17,3 +17,31 @@ export async function analyzeBrief(data) {
     throw err; // Przekazujemy błąd dalej do App.jsx
   }
 }
+
+export async function generateProposalDraft({
+  briefText,
+  experienceLevel,
+  currency,
+  analysis,
+}) {
+  const response = await fetch("http://localhost:3002/proposal", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      briefText,
+      experienceLevel,
+      currency,
+      analysis,
+    }),
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.error || "Failed to generate proposal draft.");
+  }
+
+  return data;
+}
