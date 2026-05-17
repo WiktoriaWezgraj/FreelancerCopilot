@@ -322,7 +322,7 @@ End with a short professional closing.
 Also include 2-4 polite clarification questions inside the message.
 
 Length:
-- ${attempt === 1 ? "170-230 words" : "140-190 words"}.
+- ${attempt === 1 ? "150-200 words" : "140-190 words"}.
 - Complete message.
 - No unfinished sentences.
 `;
@@ -333,7 +333,7 @@ Length:
     body: JSON.stringify({
       contents: [{ parts: [{ text: prompt }] }],
       generationConfig: {
-        maxOutputTokens: 2000,
+        maxOutputTokens: 2300,
         temperature: 0.4,
       },
     }),
@@ -356,7 +356,7 @@ Length:
 }
 
 function isProposalTooShort(proposalDraft) {
-  if (!proposalDraft || proposalDraft.length < 650) {
+  if (!proposalDraft || proposalDraft.length < 450) {
     return true;
   }
 
