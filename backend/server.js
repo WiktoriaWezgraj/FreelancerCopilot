@@ -356,7 +356,7 @@ Length:
 }
 
 function isProposalTooShort(proposalDraft) {
-  if (!proposalDraft || proposalDraft.length < 450) {
+  if (!proposalDraft || proposalDraft.length < 250) {
     return true;
   }
 
