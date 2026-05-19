@@ -9,8 +9,6 @@ The goal of the project is to support freelancers during the early decision-maki
 
 ## Preview
 
-> Screenshots coming soon.
-
 ### Light mode
 
 ![Freelancer Copilot light mode](./assets/preview-light.png)
@@ -254,7 +252,7 @@ FreelancerCopilot/
 ## Usage
 
 1.  Enter your project brief or client requirements into the text area.
-2.  Select the desired seniority level and currency. ! -> in progress
+2.  Select the desired seniority level and currency.
 3.  Click **"Analyze brief"**.
 4.  Review the AI-generated estimate and professional summary.
 
